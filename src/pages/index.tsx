@@ -1,5 +1,6 @@
 import { Meta } from '@/layouts/Meta';
 import { Main } from '@/templates/Main';
+import { ImageUpload } from '@/ui/components/ImageUpload';
 import { LoginForm } from '@/ui/components/LoginForm';
 
 const Index = () => {
@@ -13,6 +14,7 @@ const Index = () => {
       }
     >
       <LoginForm />
+      <ImageUpload />
     </Main>
   );
 };

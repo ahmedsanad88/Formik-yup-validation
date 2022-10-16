@@ -5,12 +5,10 @@ import * as Yup from 'yup';
 interface MyFormValues {
   username: string;
   password: string;
-  image?: File;
   gender: string;
-  field: string;
+  field: string[];
 }
-const FILE_SIZE = 1024 * 1024;
-const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'];
+
 const loginSchema = Yup.object().shape({
   username: Yup.string()
     .min(2, 'Too Short!')
@@ -26,36 +24,31 @@ const loginSchema = Yup.object().shape({
       /^(?=.*[!@#$%^&*])/,
       'Password must contain one special case character.'
     ),
-
-  image: Yup.mixed()
-    .notRequired()
-    .test(
-      'fileSize',
-      'File too large',
-      (value) => !value || (value && value[0].size <= FILE_SIZE)
-    )
-    .test(
-      'fileFormat',
-      'Unsupported Format',
-      (value) => !value || (value && SUPPORTED_FORMATS.includes(value[0].type))
-    ),
   gender: Yup.string().required('No gender provided.'),
-  field: Yup.string().required('No field provided.'),
+  // field: Yup.string().required('No field provided.'),
+  field: Yup.array()
+    .of(Yup.string())
+    .min(1)
+    .required('Please choose at least one option.'),
 });
 export const LoginForm = () => {
+  // const [file, setFile] = React.useState({} as File);
+  // console.log(file);
+
   const initialValues: MyFormValues = {
     username: '',
     password: '',
     gender: '',
-    field: '',
+    field: [],
   };
 
   return (
-    <div className="relative mt-72 flex h-full w-full items-center justify-center">
+    <div className="relative grid min-h-screen w-full place-items-center bg-gray-900">
       <Formik
         initialValues={initialValues}
         onSubmit={(values, actions) => {
           actions.setSubmitting(false);
+          console.log(values);
           alert(JSON.stringify(values, null, 2));
         }}
         validationSchema={loginSchema}
@@ -104,33 +97,6 @@ export const LoginForm = () => {
                 {errors.password && touched.password ? (
                   <ErrorMessage
                     name="password"
-                    className="text-base  text-red-500"
-                    component="div"
-                  />
-                ) : null}
-              </div>
-              <div className="mb-6">
-                <label
-                  className="mb-2 block text-sm font-bold text-orange-500"
-                  htmlFor="password"
-                >
-                  Upload Image
-                </label>
-                <Field
-                  className="mb-3 w-full appearance-none rounded border py-2 px-3 leading-tight text-orange-500 shadow outline-0 focus:outline-none"
-                  id="image"
-                  name="image"
-                  placeholder="Image"
-                  type="file"
-                  onChange={(event: any) => {
-                    const {
-                      target: { files },
-                    } = event;
-                  }}
-                />
-                {errors.image && touched.image ? (
-                  <ErrorMessage
-                    name="image"
                     className="text-base  text-red-500"
                     component="div"
                   />
